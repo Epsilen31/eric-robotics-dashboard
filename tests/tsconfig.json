@@ -1,0 +1,10 @@
+{
+  "$schema": "../schemas/tsconfig.schema.json",
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "..",
+    "noEmit": true,
+    "types": ["node"]
+  },
+  "include": ["**/*.ts", "../playwright.config.ts"]
+}
