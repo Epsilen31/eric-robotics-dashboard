@@ -1,5 +1,11 @@
 # Insight.IO robotics dashboard
 
+## Submitted by
+
+- **Full Name:** Abhishek Mishra
+- **Contact Number:** 8758114688
+- **Email ID:** abhishekmishra242831@gmail.com
+
 An Angular 19 dashboard built for the Insight.IO UI assignment. It includes camera and map views, a mission panel, manual driving controls, and a ROS bridge connection. Three.js handles the 3D point clouds; Nx runs the development server and builds.
 
 ![Dashboard](docs/screenshots/floor-plan.png)
