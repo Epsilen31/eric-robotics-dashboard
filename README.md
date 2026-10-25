@@ -1,106 +1,121 @@
 # Insight.IO robotics dashboard
 
-Public repository: [Epsilen31/eric-robotics-dashboard](https://github.com/Epsilen31/eric-robotics-dashboard)
-
-A locally hosted Angular 19 / Nx dashboard based on the supplied Insight.IO reference. The approved sidebar, emergency-stop artwork, camera layout, and clear floor plan are preserved. The dashboard includes an accessible 3D PCD viewer, working demo missions, and configurable ROS bridge integration.
+An Angular 19 dashboard built for the Insight.IO UI assignment. It includes camera and map views, a mission panel, manual driving controls, and a ROS bridge connection. Three.js handles the 3D point clouds; Nx runs the development server and builds.
 
 ![Dashboard](docs/screenshots/floor-plan.png)
 
-[Mission preview](docs/screenshots/mission.png) ? [3D map](docs/screenshots/3d-map.png) ? [ROS map](docs/screenshots/ros-map.png) ? [ROS camera](docs/screenshots/ros-camera.png) ? [Mobile](docs/screenshots/mobile.png) ? [Actual demo recording](docs/demo/dashboard.webm)
+[3D map](docs/screenshots/3d-map.png) | [ROS camera](docs/screenshots/ros-camera.png) | [Mobile layout](docs/screenshots/mobile.png) | [Demo video](docs/demo/dashboard.webm)
 
-## Run locally
+These captures were made during development. To record the current version, use the capture command below.
 
-Use Node.js 22.14 or newer and npm. Tested with Node 22.14 on Windows.
+## Run the app
+
+Requirements: Node.js 22.14 or newer and npm. Development and testing were done on Windows with Node.js 22.14.
 
 ```sh
+git clone https://github.com/Epsilen31/eric-robotics-dashboard.git
+cd eric-robotics-dashboard
 npm ci
 npm start
 ```
 
-Open http://localhost:4200. Restart an older running development server after installing the updated dependencies. This is an **Nx workspace**: use `npm start` or `npx nx serve insight-io`; `ng serve` cannot read this workspace's `project.json` configuration.
+Open http://localhost:4200. Use `npm start` rather than `ng serve`: this project uses an Nx workspace with `project.json`.
 
-Build and self-host the production files:
+Installing dependencies needs internet. Once installed, the app and its local demos run without an internet connection.
+
+## Try the offline demo
+
+The app starts with a floor plan and a simulated robot.
+
+1. Click **QUICK GOAL** and select an open area on the floor plan.
+2. Select **AUTO**, then **INITIATE**. The robot follows the route to the destination.
+3. Use the mission button to pause or resume. **Emergency stop** stops movement and clears the route. Release the stop before starting another mission.
+4. For manual control, select **MANUAL**. Hold W/S to move forward/backward and A/D to turn, or use the direction pad. Releasing the controls or moving focus away from the window stops manual input.
+
+Click the small preview to switch between map and camera. The offline camera is a simulated view of the floor plan: it changes as the robot moves or turns. It is labelled **LOCAL SIMULATION**.
+
+Use the sidebar to open the camera, floor plan, quick-goal selection, 3D map, recenter action, or ROS settings. The 3D map loads a bundled PCD scan. Scroll or use the zoom controls to zoom; drag to pan the floor plan or orbit the 3D map.
+
+## Connect to the local ROS demo
+
+Keep the app running and open another terminal:
+
+```sh
+npm run ros:demo
+```
+
+Open **System and ROS settings** from the sidebar. Set the bridge URL to `ws://127.0.0.1:9090` and click **Connect ROS**.
+
+The demo sends point clouds, camera images, robot pose, battery level, and mission updates over WebSocket. The camera changes with the robot's position and direction. AUTO goals, manual controls, pause, and stop work with this server.
+
+This is a Node.js simulator of the rosbridge protocol, not a running ROS installation. Its robot moves directly toward goals without planning around obstacles. The offline floor-plan demo uses a separate route planner.
+
+If port 9090 is already occupied, connect to the existing demo or start another on a different port:
+
+```sh
+npm run ros:demo -- --port 9091
+```
+
+For that command, use `ws://127.0.0.1:9091` in settings. Restart the demo server after changing its code. Select **Use offline demo** to disconnect.
+
+For an actual ROS bridge, topic configuration, and bag playback instructions, see [ROS integration](docs/ROS.md). Real robot navigation needs a controller that handles the goal, pause, and stop topics and returns mission feedback.
+
+## Build and serve
 
 ```sh
 npm run build
 npm run serve:built
 ```
 
-Open http://127.0.0.1:4202. The included static server supports byte-range requests for video. You can also serve `dist/insight-io/browser` using another static server. No CDN or external network connection is needed at runtime after dependencies are installed. Nx Cloud is not required.
+Open http://127.0.0.1:4202. The build output is in `dist/insight-io/browser` and can also be hosted with another static server.
 
-## Try the complete demo
-
-1. Open the dashboard. It starts with the clear, labelled **demo floor plan**.
-2. Click **QUICK GOAL**, then an open floor area. Walls, rooms and storage racks are excluded from demo planning.
-3. In **AUTO**, click **INITIATE**. The marker follows the highlighted grid-planned route and the mission reports completion.
-4. Pause/resume with the mission button. The emergency button stops motion and clears the active route. Release the stop and explicitly initiate again to continue.
-5. In **MANUAL**, hold W/S to drive forward/backward and A/D to turn, or hold the direction-pad buttons. Release, pause, stop, or losing focus cancels manual input. The local marker stays in walkable space.
-6. Use the existing +/? slider or mouse wheel to zoom and drag to pan. Click the picture-in-picture preview to swap the camera and map. Selected views stay selected; AUTO is a robot mode, not a slideshow.
-
-The sidebar keeps the reference artwork, with these working actions:
-
-| Icon         | Action                                                           |
-| ------------ | ---------------------------------------------------------------- |
-| Dashboard    | Camera view                                                      |
-| Map          | Clear floor plan in offline demo; live map when ROS is connected |
-| Location pin | Quick-goal selection                                             |
-| Region       | **3D Map View**: local PCD scan or live ROS cloud                |
-| Target       | Recenter the current map and reset zoom                          |
-| Trends       | **System and ROS settings**                                      |
-
-The removed Reset view / 3D scan toolbar buttons remain removed. 3D access and recentering are provided through the sidebar.
-
-## Run the local ROS simulator
-
-In a second terminal:
-
-```sh
-npm run ros:demo
-```
-
-Open **System and ROS settings**, enter `ws://127.0.0.1:9090`, and click **Connect ROS**. The simulator needs no ROS installation or bag file. It publishes synthetic PointCloud2, PNG camera frames, pose, battery and mission feedback, and consumes velocity, goal, pause and stop commands. The displayed battery becomes 87%, and the live point cloud replaces the offline sample. Synthetic camera frames render the room and storage blocks from the robot pose, so moving or turning changes the image; a stationary robot keeps the same scene. Restart the mock server after changing its code.
-
-Click QUICK GOAL, select a visible point in the live map, and INITIATE. The mock navigation model moves toward that goal. It is a protocol simulator with simple motion, not a physics or obstacle-avoidance simulator. Pause/stop are honored by the mock controller, and manual velocity commands have a 350 ms watchdog.
-
-For a direct connection link, open `http://localhost:4200/?ros=ws://127.0.0.1:9090`. Choose **Use offline demo** in settings to disconnect.
-
-For real ROS 2 and bag playback, topic configuration and controller integration, see [ROS integration](docs/ROS.md).
-
-## Checks and capture
+## Tests
 
 ```sh
 npm run test:unit
 npm run test:e2e
 npm run format:check
-npm run build
 ```
 
-Browser tests use separate local ports 4201 and 19090 so they do not reuse an older development build. On Windows they use installed Microsoft Edge. On Linux/macOS, install the Playwright Chromium browser once with `npx playwright install chromium` (Linux CI may need `--with-deps`). Browser installation needs internet; subsequent tests use only local services.
+Unit tests check point-cloud decoding, byte conversion, payload limits, and route planning. Playwright tests run the app in a browser and check view switching, robot movement, mission controls, ROS data and commands, and the mobile layout. The browser tests start local servers on ports 4201 and 19090; they may reuse servers already running on those ports, so stop stale test servers after code changes.
 
-Unit tests cover point-cloud byte order, field offsets, row padding, invalid points, payload limits, and obstacle-aware demo planning. Browser tests cover pose-linked offline camera rendering, sidebar 3D access, goal selection, mission completion, pause/resume, stop, manual input, live ROS camera/telemetry/commands, disconnect handling, and mobile layout.
-
-For video recording, install the small Playwright encoder once with `npx playwright install ffmpeg` (internet is only needed for that installation). To regenerate the implementation screenshots and video from the production build:
+On Windows, the tests use Microsoft Edge if it is found in the expected installation directory. Otherwise, install Playwright's Chromium browser:
 
 ```sh
+npx playwright install chromium
+```
+
+The browser download needs internet. The tests themselves use local services.
+
+## Screenshots and video
+
+Install the recording tool once, then capture the production build:
+
+```sh
+npx playwright install ffmpeg
 npm run build
 npm run capture
 ```
 
-Capture starts and stops its own static server (14202) and mock ROS server (19091), then writes `docs/screenshots/` and `docs/demo/dashboard.webm`.
+If Edge is unavailable, install Chromium as described above. Capture uses local ports 14202 and 19091 and saves screenshots to `docs/screenshots/` and the recording to `docs/demo/dashboard.webm`.
 
-## Architecture, assets and limits
+## Project structure
 
-- [Architecture and design decisions](docs/ARCHITECTURE.md)
-- [Asset sources and licenses](src/assets/README.md)
-- [Submission checklist](docs/SUBMISSION.md)
-- [Validation record](docs/VALIDATION.md)
+- `src/app/core/models/`: geometry, navigation, and ROS message types.
+- `src/app/core/constants/`: configuration, movement settings, and data limits.
+- `src/app/core/demo/`: offline route planning and camera rendering.
+- `src/app/core/utils/`: byte and point-cloud decoding.
+- `src/app/core/`: dashboard state and ROS connection services.
+- `src/app/layout/`, `overlays/`, `views/`: components with their HTML and SCSS.
+- `tools/`: ROS simulator, static server, and capture scripts.
+- `tests/`: unit and browser tests.
 
-The assignment does not supply the original factory video or matching map. The video, PCL scan, illustrative floor plan and synthetic ROS environment are independent demo sources. The floor plan is not a reconstruction of the point cloud. Source changes are clearly labelled; no sample data is presented as a physical robot's live telemetry.
+[Architecture](docs/ARCHITECTURE.md) | [Asset sources and licenses](src/assets/README.md) | [Validation notes](docs/VALIDATION.md) | [Submission checklist](docs/SUBMISSION.md)
 
-Real robot navigation requires a controller/adapter that consumes the documented goal, pause and stop topics and returns mission feedback. No physical robot or ROS bag was supplied, so hardware integration is not claimed as tested. The emergency control is a software stop; it is not a hardware safety circuit.
+## Known limitations
 
-The production build passes with the existing initial-bundle warning (Three.js exceeds the 500 kB warning threshold but stays below the 1 MB error threshold). Dependency installation also reports audit findings in the existing framework/tooling stack; breaking dependency upgrades were not applied as part of this implementation.
-
-The original local Git history was deleted before publication. The new repository records the completed source in logical commit batches; these commits do not represent the original development timeline.
-
-The offline camera is a labelled local simulation rendered from the floor-plan robot pose and obstacles. It changes during manual and automatic movement, stays still when stopped, and needs no ROS server. The original sample video remains in assets but is no longer the default offline view.
+- The original factory video and matching map were not supplied. The floor plan, PCD scan, and ROS demo are separate sample environments. The bundled Sintel video is retained as a sample asset; the offline camera uses the simulation instead.
+- ROS communication has been tested with the local protocol simulator. Physical robot operation, actual ROS bag playback, TF transforms, and Nav2 action integration have not been tested.
+- The emergency button sends a software stop. A physical robot needs its own safety controls.
+- The production build passes with an initial bundle-size warning of about 794 kB against a 500 kB warning budget. Dependency audit findings in the framework/tooling stack remain unresolved.
+- The original Git history was deleted before publication. The current commits group the completed code into batches rather than reproduce its development timeline.
