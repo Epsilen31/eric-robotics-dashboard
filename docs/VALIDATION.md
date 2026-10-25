@@ -9,7 +9,7 @@ Checked on 25 October 2026 with Node.js 22.14 and installed Microsoft Edge on Wi
 | Targeted ROS/mobile regression after final polish | 2 passed                                                                                     |
 | `npm run format:check`                            | Passed                                                                                       |
 | `npm run build`                                   | Passed; existing initial-bundle warning, approximately 790 kB raw total                      |
-| `npm run capture`                                 | Actual production screenshots and WebM generated using local mock ROS                        |
+| Recorded demo artifacts                           | Actual production screenshots and WebM generated using local mock ROS                        |
 | Browser runtime errors                            | None in checked workflows                                                                    |
 
 The ROS check uses a real local WebSocket server. It verifies PointCloud2 subscriptions, compressed PNG decoding, received pose/battery data, Twist publication, map-frame goals, pause/resume, software stop and disconnect state. Earlier demo goals are cleared when switching data sources. The offline mission test checks obstacle rejection, visible movement, pausing, completion, stop and manual input.

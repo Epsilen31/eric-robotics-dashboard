@@ -26,7 +26,7 @@ The software stop publishes zero velocity plus the configured stop Boolean. A re
 
 ## Validation
 
-Tests use actual local WebSockets, not a replacement browser WebSocket implementation. The simulator provides repeatable point clouds, encoded PNG images, pose/battery feedback and command consumption. It is explicitly synthetic. Browser tests also check the offline camera, mission lifecycle, 3D access, sidebar state and mobile layout. Screenshots and the WebM recording are captured from the built application by `npm run capture`.
+Tests use actual local WebSockets, not a replacement browser WebSocket implementation. The simulator provides repeatable point clouds, encoded PNG images, pose/battery feedback and command consumption. It is explicitly synthetic. Browser tests also check the offline camera, mission lifecycle, 3D access, sidebar state and mobile layout. Screenshots and the WebM recording from the built application are included in `docs/screenshots/` and `docs/demo/`.
 
 ## Code organization and naming
 

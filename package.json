@@ -12,7 +12,6 @@
     "test": "npm run test:unit && npm run test:e2e",
     "test:unit": "tsx --test tests/unit/*.test.ts",
     "test:e2e": "playwright test",
-    "capture": "node tools/capture-demo.cjs",
     "serve:built": "node tools/serve-built.cjs"
   },
   "dependencies": {

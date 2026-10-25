@@ -10,9 +10,9 @@ An Angular 19 dashboard built for the Insight.IO UI assignment. It includes came
 
 ![Dashboard](docs/screenshots/floor-plan.png)
 
-[3D map](docs/screenshots/3d-map.png) | [ROS camera](docs/screenshots/ros-camera.png) | [Mobile layout](docs/screenshots/mobile.png) | [Demo video](docs/demo/dashboard.webm)
+[Offline camera](docs/screenshots/offline-camera.png) | [3D map](docs/screenshots/3d-map.png) | [ROS camera](docs/screenshots/ros-camera.png) | [Mobile layout](docs/screenshots/mobile.png) | [Demo video](docs/demo/dashboard.webm)
 
-These captures were made during development. To record the current version, use the capture command below.
+The screenshots and demo video show the current production build, including the offline camera simulation, mission controls, ROS demo, and mobile layout.
 
 ## Run the app
 
@@ -95,15 +95,7 @@ The browser download needs internet. The tests themselves use local services.
 
 ## Screenshots and video
 
-Install the recording tool once, then capture the production build:
-
-```sh
-npx playwright install ffmpeg
-npm run build
-npm run capture
-```
-
-If Edge is unavailable, install Chromium as described above. Capture uses local ports 14202 and 19091 and saves screenshots to `docs/screenshots/` and the recording to `docs/demo/dashboard.webm`.
+Screenshots are included in `docs/screenshots/`, and the demo video is at `docs/demo/dashboard.webm`. Open the links at the top of this README to view them.
 
 ## Project structure
 
@@ -113,7 +105,7 @@ If Edge is unavailable, install Chromium as described above. Capture uses local 
 - `src/app/core/utils/`: byte and point-cloud decoding.
 - `src/app/core/`: dashboard state and ROS connection services.
 - `src/app/layout/`, `overlays/`, `views/`: components with their HTML and SCSS.
-- `tools/`: ROS simulator, static server, and capture scripts.
+- `tools/`: ROS simulator, static server, and browser configuration.
 - `tests/`: unit and browser tests.
 
 [Architecture](docs/ARCHITECTURE.md) | [Asset sources and licenses](src/assets/README.md) | [Validation notes](docs/VALIDATION.md) | [Submission checklist](docs/SUBMISSION.md)
