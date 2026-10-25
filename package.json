@@ -1,0 +1,49 @@
+{
+  "name": "insight-io",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "ng": "ng",
+    "start": "nx serve insight-io",
+    "build": "nx build",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "ros:demo": "node tools/mock-ros.cjs",
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "tsx --test tests/unit/*.test.ts",
+    "test:e2e": "playwright test",
+    "capture": "node tools/capture-demo.cjs",
+    "serve:built": "node tools/serve-built.cjs"
+  },
+  "dependencies": {
+    "@angular/common": "^19.2.0",
+    "@angular/compiler": "^19.2.0",
+    "@angular/core": "^19.2.0",
+    "@angular/platform-browser": "^19.2.0",
+    "@nx/angular": "23.0.2",
+    "@types/three": "^0.186.0",
+    "rxjs": "~7.8.1",
+    "three": "^0.186.1",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.15.0"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^19.2.0",
+    "@angular-devkit/core": "^19.2.0",
+    "@angular-devkit/schematics": "^19.2.0",
+    "@angular/cli": "^19.2.0",
+    "@angular/compiler-cli": "^19.2.0",
+    "@nx/angular": "23.0.2",
+    "@nx/workspace": "23.0.2",
+    "@playwright/test": "^1.64.1",
+    "@schematics/angular": "^19.2.0",
+    "nx": "23.0.2",
+    "prettier": "^3.9.10",
+    "tsx": "^4.23.15",
+    "typescript": "~5.7.2",
+    "ws": "^8.22.0"
+  },
+  "engines": {
+    "node": ">=22.14.0"
+  }
+}

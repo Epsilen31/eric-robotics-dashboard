@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.angular/
+.npm-cache/
+out-tsc/
+package-lock.json
+
+.implementation/
+.nx/
+test-results/
+playwright-report/
+
+.vscode/

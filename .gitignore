@@ -1,0 +1,17 @@
+node_modules/
+dist/
+.angular/
+out-tsc/
+.npm-cache/
+
+
+
+.nx/
+
+.implementation/
+test-results/
+playwright-report/
+.env
+.env.*
+
+.vscode/

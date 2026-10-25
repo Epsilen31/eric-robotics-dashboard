@@ -1,0 +1,65 @@
+{
+  "$schema": "node_modules/nx/schemas/project-schema.json",
+  "name": "insight-io",
+  "projectType": "application",
+  "sourceRoot": "src",
+  "prefix": "app",
+  "generators": {
+    "@schematics/angular:component": {
+      "style": "scss",
+      "standalone": true
+    }
+  },
+  "targets": {
+    "build": {
+      "executor": "@angular-devkit/build-angular:application",
+      "options": {
+        "outputPath": "dist/insight-io",
+        "index": "src/index.html",
+        "browser": "src/main.ts",
+        "polyfills": ["zone.js"],
+        "tsConfig": "tsconfig.app.json",
+        "inlineStyleLanguage": "scss",
+        "styles": ["src/styles.scss"],
+        "assets": [
+          {
+            "glob": "**/*",
+            "input": "src/assets",
+            "output": "assets"
+          }
+        ]
+      },
+      "configurations": {
+        "production": {
+          "outputHashing": "all",
+          "budgets": [
+            {
+              "type": "initial",
+              "maximumWarning": "500kB",
+              "maximumError": "1MB"
+            }
+          ]
+        },
+        "development": {
+          "optimization": false,
+          "extractLicenses": false,
+          "sourceMap": true
+        }
+      },
+      "defaultConfiguration": "production",
+      "outputs": ["{options.outputPath}"]
+    },
+    "serve": {
+      "executor": "@angular-devkit/build-angular:dev-server",
+      "configurations": {
+        "production": {
+          "buildTarget": "insight-io:build:production"
+        },
+        "development": {
+          "buildTarget": "insight-io:build:development"
+        }
+      },
+      "defaultConfiguration": "development"
+    }
+  }
+}
