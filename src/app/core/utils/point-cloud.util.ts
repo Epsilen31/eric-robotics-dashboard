@@ -5,7 +5,7 @@ import {
   PointFieldDataType,
 } from '../models/point-cloud.model';
 import { POINT_CLOUD_LIMITS } from '../constants/point-cloud.constants';
-/** Decode XYZ float32/float64, respecting organized rows, byte order and invalid points. */
+
 export function decodePointCloud(
   message: PointCloudMessage,
   maxPoints: number = POINT_CLOUD_LIMITS.maxRenderedPoints,

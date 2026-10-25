@@ -134,7 +134,6 @@ export class MapViewComponent implements AfterViewInit, OnDestroy {
         this.viewport.nativeElement.appendChild(this.renderer.domElement);
         this.renderer.domElement.addEventListener('wheel', this.wheel, { passive: false });
         this.scene.background = new THREE.Color('#d3d4d1');
-        // ROS and local PCD coordinates use Z as height.
         this.orbitCamera.up.set(0, 0, 1);
         this.orbitCamera.position.set(15, -15, 15);
         this.configureControls();
@@ -368,7 +367,6 @@ export class MapViewComponent implements AfterViewInit, OnDestroy {
     this.controls.target.copy(target);
     this.controls.enableDamping = true;
     this.controls.enableRotate = !this.state.selectingGoal();
-    // Wheel and slider share the dashboard zoom value.
     this.controls.enableZoom = false;
     this.controls.screenSpacePanning = true;
     this.controls.minZoom = 0.1;

@@ -1,5 +1,4 @@
 import { defineConfig } from '@playwright/test';
-// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { browserOptions } = require('./tools/browser.cjs');
 export default defineConfig({
   testDir: './tests/e2e',

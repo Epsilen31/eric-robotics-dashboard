@@ -1,5 +1,5 @@
 const http = require('node:http');
-const zlib = require('node:zlib');
+const { renderMockCamera } = require('./mock-camera.cjs');
 const { WebSocketServer, WebSocket } = require('ws');
 const portFlag = process.argv.indexOf('--port');
 const port = Number(portFlag >= 0 ? process.argv[portFlag + 1] : 9090);
@@ -43,110 +43,13 @@ function makeCloud() {
     is_dense: true,
   };
 }
-// A native PNG encoder keeps this deliberately synthetic camera frame offline and dependency-free.
-function mockCamera() {
-  const width = 640,
-    height = 360,
-    data = Buffer.alloc((width * 3 + 1) * height);
-  // Ray-cast the same room and storage blocks published by makeCloud().
-  const boxes = [-4, 0, 4].map((x) => ({ left: x - 0.6, right: x + 0.6, bottom: -1, top: 3 }));
-  function hitBox(dx, dy, box) {
-    let near = -Infinity;
-    let far = Infinity;
-    for (const [origin, direction, min, max] of [
-      [robot.x, dx, box.left, box.right],
-      [robot.y, dy, box.bottom, box.top],
-    ]) {
-      if (Math.abs(direction) < 1e-9) {
-        if (origin < min || origin > max) return Infinity;
-        continue;
-      }
-      const a = (min - origin) / direction;
-      const b = (max - origin) / direction;
-      near = Math.max(near, Math.min(a, b));
-      far = Math.min(far, Math.max(a, b));
-    }
-    if (far < Math.max(near, 0)) return Infinity;
-    // When the simple simulator crosses a rack, render its exit surface.
-    return Math.max(near >= 0 ? near : far, 0.02);
-  }
-  for (let x = 0; x < width; x++) {
-    const sideways = ((x + 0.5) / width - 0.5) * 1.4;
-    const dx = Math.cos(robot.heading) - Math.sin(robot.heading) * sideways;
-    const dy = Math.sin(robot.heading) + Math.cos(robot.heading) * sideways;
-    const wall = Math.min(
-      dx > 0 ? (8 - robot.x) / dx : dx < 0 ? (-8 - robot.x) / dx : Infinity,
-      dy > 0 ? (6 - robot.y) / dy : dy < 0 ? (-6 - robot.y) / dy : Infinity,
-    );
-    let distance = Math.max(0.02, wall);
-    let storage = false;
-    for (const box of boxes) {
-      const hit = hitBox(dx, dy, box);
-      if (hit < distance) {
-        distance = hit;
-        storage = true;
-      }
-    }
-    const top = 180 - (((storage ? 1.4 : 2) - 0.8) * 260) / distance;
-    const bottom = 180 + (0.8 * 260) / distance;
-    for (let y = 0; y < height; y++) {
-      let rgb = [125, 143, 151];
-      if (y >= top && y <= bottom) {
-        const worldX = robot.x + dx * distance;
-        const worldY = robot.y + dy * distance;
-        const rail =
-          Math.abs(worldX * 2 - Math.round(worldX * 2)) < 0.06 ||
-          Math.abs(worldY * 2 - Math.round(worldY * 2)) < 0.06 ||
-          Math.abs((((y - top) / Math.max(bottom - top, 1)) * 3) % 1) < 0.06;
-        rgb = storage ? (rail ? [235, 202, 33] : [54, 76, 85]) : [151, 160, 154];
-      } else if (y > 180) {
-        const depth = (0.8 * 260) / (y - 180);
-        const floorX = robot.x + dx * depth;
-        const floorY = robot.y + dy * depth;
-        const grid =
-          Math.abs(floorX - Math.round(floorX)) < 0.025 ||
-          Math.abs(floorY - Math.round(floorY)) < 0.025;
-        rgb = grid ? [125, 139, 137] : [184, 187, 178];
-      }
-      const offset = y * (width * 3 + 1) + 1 + x * 3;
-      data.set(rgb, offset);
-    }
-  }
-  function crc(bytes) {
-    let c = 0xffffffff;
-    for (const b of bytes) {
-      c ^= b;
-      for (let i = 0; i < 8; i++) c = c & 1 ? 0xedb88320 ^ (c >>> 1) : c >>> 1;
-    }
-    return (c ^ 0xffffffff) >>> 0;
-  }
-  function chunk(type, bytes) {
-    const name = Buffer.from(type),
-      length = Buffer.alloc(4),
-      sum = Buffer.alloc(4);
-    length.writeUInt32BE(bytes.length);
-    sum.writeUInt32BE(crc(Buffer.concat([name, bytes])));
-    return Buffer.concat([length, name, bytes, sum]);
-  }
-  const ihdr = Buffer.alloc(13);
-  ihdr.writeUInt32BE(width);
-  ihdr.writeUInt32BE(height, 4);
-  ihdr[8] = 8;
-  ihdr[9] = 2;
-  return Buffer.concat([
-    Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]),
-    chunk('IHDR', ihdr),
-    chunk('IDAT', zlib.deflateSync(data)),
-    chunk('IEND', Buffer.alloc(0)),
-  ]).toString('base64');
-}
 const cloud = makeCloud();
 let cameraPose = '';
 let camera;
 function cameraFrame() {
   const pose = `${robot.x},${robot.y},${robot.heading}`;
   if (pose !== cameraPose) {
-    camera = mockCamera();
+    camera = renderMockCamera(robot);
     cameraPose = pose;
   }
   return camera;
@@ -189,7 +92,7 @@ function packet(topic) {
             w: Math.cos(robot.heading / 2),
           },
         },
-        covariance: Array(36).fill(0),
+        covariance: new Array(36).fill(0),
       },
     };
   return null;
@@ -208,94 +111,142 @@ wss.on('connection', (socket) => {
       mission = 'idle';
     }
   });
-  socket.on('message', (raw) => {
-    try {
-      const p = JSON.parse(raw.toString());
-      messages.push(p);
-      if (messages.length > 300) messages.shift();
-      if (p.op === 'subscribe') {
-        socket.subscriptions.add(p.topic);
-        publish(socket, p.topic);
-        return;
-      }
-      if (p.op === 'unsubscribe') {
-        socket.subscriptions.delete(p.topic);
-        return;
-      }
-      if (p.op !== 'publish' || !p.msg) return;
-      if (p.topic === '/cmd_vel') {
-        const linear = p.msg.linear?.x,
-          angular = p.msg.angular?.z;
-        if (!Number.isFinite(linear) || !Number.isFinite(angular)) return;
-        velocity = {
-          linear: Math.max(-0.3, Math.min(0.3, linear)),
-          angular: Math.max(-1, Math.min(1, angular)),
-        };
-        lastVelocity = Date.now();
-        if (linear || angular) {
-          goal = null;
-          mission = 'manual';
-        }
-      } else if (p.topic === '/goal_pose') {
-        const point = p.msg.pose?.position;
-        if (
-          stopped ||
-          p.msg.header?.frame_id !== 'map' ||
-          !point ||
-          ![point.x, point.y].every(Number.isFinite)
-        )
-          return;
-        goal = { x: point.x, y: point.y };
-        paused = false;
-        mission = 'active';
-      } else if (p.topic === '/dashboard/stop') {
-        stopped = Boolean(p.msg.data);
-        velocity = { linear: 0, angular: 0 };
-        goal = null;
-        mission = stopped ? 'stopped' : 'idle';
-      } else if (p.topic === '/dashboard/pause') {
-        paused = Boolean(p.msg.data);
-        velocity = { linear: 0, angular: 0 };
-        mission = paused ? 'paused' : goal ? 'active' : 'idle';
-      }
-    } catch {
-      /* Invalid client packets are ignored by this local simulator. */
-    }
-  });
+  socket.on('message', (raw) => handleClientMessage(socket, raw));
 });
-let tick = 0;
-const timer = setInterval(() => {
-  tick++;
-  if (!stopped && !paused) {
-    if (goal) {
-      const dx = goal.x - robot.x,
-        dy = goal.y - robot.y,
-        d = Math.hypot(dx, dy);
-      if (d < 0.1) {
-        goal = null;
-        mission = 'completed';
-      } else {
-        robot.heading = Math.atan2(dy, dx);
-        robot.x += (dx / d) * 0.08;
-        robot.y += (dy / d) * 0.08;
-      }
-    } else if (Date.now() - lastVelocity < 350) {
-      robot.heading += velocity.angular * 0.1;
-      robot.x += Math.cos(robot.heading) * velocity.linear * 0.1;
-      robot.y += Math.sin(robot.heading) * velocity.linear * 0.1;
+
+function applyVelocity(message) {
+  const linear = message.linear?.x;
+  const angular = message.angular?.z;
+  if (!Number.isFinite(linear) || !Number.isFinite(angular)) return;
+  velocity = {
+    linear: Math.max(-0.3, Math.min(0.3, linear)),
+    angular: Math.max(-1, Math.min(1, angular)),
+  };
+  lastVelocity = Date.now();
+  if (linear || angular) {
+    goal = null;
+    mission = 'manual';
+  }
+}
+
+function applyGoal(message) {
+  const point = message.pose?.position;
+  if (
+    stopped ||
+    message.header?.frame_id !== 'map' ||
+    !point ||
+    ![point.x, point.y].every(Number.isFinite)
+  )
+    return;
+  goal = { x: point.x, y: point.y };
+  paused = false;
+  mission = 'active';
+}
+
+function applyStop(message) {
+  stopped = Boolean(message.data);
+  velocity = { linear: 0, angular: 0 };
+  goal = null;
+  mission = stopped ? 'stopped' : 'idle';
+}
+
+function applyPause(message) {
+  paused = Boolean(message.data);
+  velocity = { linear: 0, angular: 0 };
+  if (paused) mission = 'paused';
+  else mission = goal ? 'active' : 'idle';
+}
+
+const commandHandlers = new Map([
+  ['/cmd_vel', applyVelocity],
+  ['/goal_pose', applyGoal],
+  ['/dashboard/stop', applyStop],
+  ['/dashboard/pause', applyPause],
+]);
+
+function decodeClientMessage(raw) {
+  if (typeof raw === 'string') return raw;
+  if (Buffer.isBuffer(raw)) return raw.toString('utf8');
+  if (raw instanceof ArrayBuffer) return Buffer.from(raw).toString('utf8');
+  if (Array.isArray(raw) && raw.every(Buffer.isBuffer)) return Buffer.concat(raw).toString('utf8');
+  throw new TypeError('Unsupported WebSocket message format');
+}
+
+function dispatchClientPacket(socket, packet) {
+  if (packet.op === 'subscribe') {
+    socket.subscriptions.add(packet.topic);
+    publish(socket, packet.topic);
+    return;
+  }
+  if (packet.op === 'unsubscribe') {
+    socket.subscriptions.delete(packet.topic);
+    return;
+  }
+  if (packet.op !== 'publish' || !packet.msg) return;
+  commandHandlers.get(packet.topic)?.(packet.msg);
+}
+
+function handleClientMessage(socket, raw) {
+  try {
+    const packet = JSON.parse(decodeClientMessage(raw));
+    messages.push(packet);
+    if (messages.length > 300) messages.shift();
+    dispatchClientPacket(socket, packet);
+  } catch {
+    if (socket.readyState === WebSocket.OPEN) {
+      socket.send(
+        JSON.stringify({ op: 'status', level: 'error', msg: 'Invalid ROS client packet' }),
+      );
     }
   }
-  for (const socket of wss.clients)
-    for (const topic of socket.subscriptions)
-      if (
-        topic === '/camera/image/compressed'
-          ? tick % 2 === 0
-          : topic === '/points' || topic === '/battery_state'
-            ? tick % 10 === 0
-            : true
-      )
-        publish(socket, topic);
+}
+
+function advanceGoal() {
+  const dx = goal.x - robot.x;
+  const dy = goal.y - robot.y;
+  const distance = Math.hypot(dx, dy);
+  if (distance < 0.1) {
+    goal = null;
+    mission = 'completed';
+    return;
+  }
+  robot.heading = Math.atan2(dy, dx);
+  robot.x += (dx / distance) * 0.08;
+  robot.y += (dy / distance) * 0.08;
+}
+
+function updateRobot() {
+  if (stopped || paused) return;
+  if (goal) {
+    advanceGoal();
+    return;
+  }
+  if (Date.now() - lastVelocity >= 350) return;
+  robot.heading += velocity.angular * 0.1;
+  robot.x += Math.cos(robot.heading) * velocity.linear * 0.1;
+  robot.y += Math.sin(robot.heading) * velocity.linear * 0.1;
+}
+
+const topicIntervals = new Map([
+  ['/camera/image/compressed', 2],
+  ['/points', 10],
+  ['/battery_state', 10],
+]);
+let tick = 0;
+function publishSubscribedTopics() {
+  for (const socket of wss.clients) {
+    for (const topic of socket.subscriptions) {
+      const interval = topicIntervals.get(topic) ?? 1;
+      if (tick % interval === 0) publish(socket, topic);
+    }
+  }
+}
+const timer = setInterval(() => {
+  tick++;
+  updateRobot();
+  publishSubscribedTopics();
 }, 100);
+
 wss.on('error', (error) => {
   if (error.code === 'EADDRINUSE') {
     console.error(

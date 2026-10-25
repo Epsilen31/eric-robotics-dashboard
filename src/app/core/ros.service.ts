@@ -44,7 +44,7 @@ export class RosService implements OnDestroy {
       const bridgeUrl = new URLSearchParams(location.search).get('ros');
       if (bridgeUrl) this.connect({ ...config, bridgeUrl });
     } catch {
-      // Missing optional defaults must not prevent the offline demo from starting.
+      if (!this.destroyed && !this.reconnectEnabled) this.config.set({ ...DEFAULT_ROS_CONFIG });
     }
   }
   connect(config: RosConfig): void {
@@ -107,7 +107,6 @@ export class RosService implements OnDestroy {
           [config.pauseTopic, 'std_msgs/msg/Bool'],
         ])
           this.send({ op: 'advertise', topic, type });
-        // A new session always starts with no requested movement.
         this.publishVelocity(0, 0);
       };
       socket.onmessage = (event) => this.receiveMessage(socket, event);

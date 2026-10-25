@@ -1,7 +1,6 @@
 import { isWalkable } from './facility';
 import type { RobotPose2D } from '../models/geometry.model';
 
-/** Illustrative first-person view of the same obstacles used by the offline planner. */
 export function renderDemoCamera(canvas: HTMLCanvasElement, pose: RobotPose2D): void {
   const context = canvas.getContext('2d');
   if (!context) return;
