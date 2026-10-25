@@ -1,0 +1,49 @@
+.pill {
+  display: flex;
+  align-items: center;
+  height: 34px;
+  padding: 4px 5px 4px 13px;
+  gap: 9px;
+  background: #fffffff2;
+  border: 1px solid #e2e4e0;
+  border-radius: 24px;
+  color: #172a34;
+  box-shadow: 0 2px 9px #0002;
+}
+.label {
+  color: #8a9192;
+  font-size: 9px;
+}
+.mission {
+  font-size: 9px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+button {
+  width: 24px;
+  height: 24px;
+  margin-left: 10px;
+  border: 1px solid #64747b;
+  border-radius: 50%;
+  background: #192f3c;
+  color: white;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+svg {
+  width: 13px;
+  height: 13px;
+}
+.stopped {
+  color: #b41e2e;
+  background: #ffe1e5;
+  border-radius: 6px;
+  padding: 4px 7px;
+  font-size: 9px;
+  letter-spacing: 0.5px;
+}
+button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}

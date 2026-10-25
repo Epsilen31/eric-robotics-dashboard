@@ -1,0 +1,162 @@
+:host {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: var(--sidebar-width, 88px);
+  z-index: 10;
+}
+aside {
+  height: 100%;
+  background:
+    radial-gradient(circle, #afc4d20b 0.65px, transparent 0.9px) 0 0 / 4px 4px,
+    repeating-linear-gradient(55deg, #ffffff02 0 1px, transparent 1px 5px),
+    linear-gradient(165deg, #1b2c3d, #0b1a27 66%, #06131c);
+  border-right: 1px solid #859198;
+  box-shadow:
+    inset -2px 0 0 #3e505f,
+    2px 0 5px #0002;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+.logo {
+  margin-top: 24px;
+  color: #f5f7f8;
+  text-decoration: none;
+  font-weight: 700;
+  letter-spacing: -1px;
+  font-size: 34px;
+  line-height: 36px;
+  position: relative;
+  text-align: center;
+}
+.logo span {
+  position: absolute;
+  font-size: 6px;
+  line-height: 1;
+  top: 2px;
+  right: -4px;
+  letter-spacing: 0;
+}
+.logo small {
+  display: block;
+  font-size: 6px;
+  line-height: 10px;
+  font-weight: 500;
+  letter-spacing: 3.6px;
+  padding-left: 3px;
+  color: #9aabb7;
+}
+nav {
+  margin-top: 118px;
+  display: flex;
+  flex-direction: column;
+  gap: 42px;
+  width: 100%;
+  align-items: center;
+}
+button {
+  color: #95a7b4;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 auto;
+  border-radius: 6px;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+button:hover {
+  background: #ffffff08;
+  color: #fff;
+}
+button.active {
+  color: #fff;
+}
+svg {
+  display: block;
+  width: 29px;
+  height: 29px;
+  fill: none;
+  stroke-width: 1.25;
+}
+button.active svg {
+  fill: none;
+}
+button.active .dashboard-icon path {
+  fill: currentColor;
+  stroke: none;
+}
+.user {
+  margin-top: auto;
+  margin-bottom: 26px;
+  padding-top: 14px;
+  width: 28px;
+  min-height: 42px;
+  display: grid;
+  place-items: center;
+  color: #8798a2;
+}
+.user svg {
+  width: 20px;
+  height: 20px;
+}
+@media (max-width: 900px) {
+  .logo {
+    font-size: 28px;
+    line-height: 32px;
+  }
+}
+@media (max-height: 719px) and (min-width: 601px) {
+  .logo {
+    margin-top: 18px;
+    font-size: 28px;
+    line-height: 30px;
+  }
+  nav {
+    margin-top: 38px;
+    gap: clamp(6px, 2.5vh, 15px);
+  }
+  button {
+    height: 36px;
+  }
+  svg {
+    width: 25px;
+    height: 25px;
+  }
+  .user {
+    margin-bottom: 16px;
+  }
+}
+@media (max-width: 600px) {
+  :host {
+    inset: auto 0 0;
+    width: 100%;
+    height: calc(60px + env(safe-area-inset-bottom, 0px));
+  }
+  aside {
+    flex-direction: row;
+    border-right: 0;
+    border-top: 1px solid #394b57;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .logo,
+  .user {
+    display: none;
+  }
+  nav {
+    margin: 0;
+    flex-direction: row;
+    justify-content: space-around;
+    gap: 0;
+  }
+  svg {
+    width: 23px;
+    height: 23px;
+  }
+  button.active {
+    background: #ffffff0a;
+  }
+}

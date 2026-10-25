@@ -1,0 +1,82 @@
+<div
+  class="floor-plan"
+  [class.hidden]="isPointCloudView()"
+  [class.selecting]="state.selectingGoal()"
+  (wheel)="zoomFloorPlan($event)"
+  (pointerdown)="startPan($event)"
+  (pointermove)="pan($event)"
+  (pointerup)="endPan($event)"
+  (pointercancel)="endPan($event)"
+  (lostpointercapture)="endPan($event)"
+>
+  <div class="plan-content" [style.transform]="floorPlanTransform()">
+    <img src="/assets/map/floor-plan.svg" alt="Demo facility floor plan" draggable="false" />
+    <svg class="floor-overlay" viewBox="0 0 840 580" aria-label="Demo robot and navigation route">
+      <polyline
+        [attr.points]="routePoints()"
+        fill="none"
+        stroke="#138ba6"
+        stroke-width="4"
+        stroke-dasharray="8 5"
+      />
+      @if (state.goal(); as goal) {
+        @if (goal.source === 'demo') {
+          <g class="goal-marker">
+            <circle [attr.cx]="goal.x" [attr.cy]="goal.y" r="13" />
+            <circle [attr.cx]="goal.x" [attr.cy]="goal.y" r="4" />
+          </g>
+        }
+      }
+      <g
+        [attr.transform]="robotTransform()"
+        data-testid="demo-robot"
+        [attr.data-x]="state.robot().x"
+        [attr.data-y]="state.robot().y"
+      >
+        <circle r="33" fill="#d5eaf0" />
+        <circle r="23" fill="#17768d" stroke="#fff" stroke-width="3" />
+        <path d="m0-11 9 17-9-4-9 4z" fill="#fff" />
+      </g>
+      <text
+        [attr.x]="state.robot().x > 600 ? state.robot().x - 44 : state.robot().x + 44"
+        [attr.text-anchor]="state.robot().x > 600 ? 'end' : 'start'"
+        paint-order="stroke"
+        stroke="#fafbf8"
+        stroke-width="6"
+        stroke-linejoin="round"
+        [attr.y]="state.robot().y + 7"
+        fill="#246173"
+        font-family="Arial, sans-serif"
+        font-size="20"
+        font-weight="600"
+      >
+        Robot (demo)
+      </text>
+    </svg>
+  </div>
+</div>
+<div
+  #viewport
+  class="viewport"
+  [class.hidden]="!isPointCloudView()"
+  aria-label="3D point cloud scan"
+  (pointerdown)="scanPointerStart($event)"
+  (pointerup)="pickLiveGoal($event)"
+></div>
+@if (!isPointCloudView()) {
+  <div class="map-caption"><strong>Floor plan</strong><span>Demo layout</span></div>
+  <div class="map-key">
+    <span><i class="wall-key"></i>Walls</span><span><i class="storage-key"></i>Storage</span
+    ><span><i class="robot-key"></i>Demo robot</span>
+  </div>
+}
+@if (isPointCloudView()) {
+  <div class="map-caption">
+    <strong>3D Map</strong
+    ><span>{{ state.ros.status() === 'demo' ? 'Local PCD sample' : 'ROS point cloud' }}</span
+    ><span>Drag to orbit / Scroll to zoom</span>
+  </div>
+  @if (scanMessage()) {
+    <p role="status">{{ scanMessage() }}</p>
+  }
+}

@@ -1,0 +1,30 @@
+button {
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 3px 4px 3px 13px;
+  border: 1px solid #e2e4e0;
+  border-radius: 22px;
+  background: #fffffff2;
+  color: #172a34;
+  cursor: pointer;
+  box-shadow: 0 2px 9px #0002;
+}
+span {
+  font-size: 9px;
+  font-weight: 600;
+}
+svg {
+  width: 24px;
+  height: 24px;
+  padding: 4px;
+  border: 1px solid #839097;
+  border-radius: 50%;
+  background: #203744;
+  color: white;
+}
+button:hover {
+  background: #e8eff0;
+}

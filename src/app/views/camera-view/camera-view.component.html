@@ -1,0 +1,16 @@
+@if (ros.status() !== 'demo') {
+  @if (ros.cameraImage()) {
+    <img [src]="ros.cameraImage()" alt="ROS robot camera" />
+  } @else {
+    <p role="status">Waiting for ROS camera</p>
+  }
+} @else {
+  <canvas
+    #demoCamera
+    width="320"
+    height="180"
+    role="img"
+    aria-label="Simulated offline robot camera"
+  ></canvas>
+  <span class="demo-label">LOCAL SIMULATION</span>
+}

@@ -1,0 +1,24 @@
+<div class="pill">
+  <span class="label">Status</span
+  ><span class="mission" aria-live="polite">
+    @if (state.stopped()) {
+      <span class="stopped">STOPPED</span>
+    } @else {
+      {{ state.missionLabel() }}
+    }</span
+  ><button
+    type="button"
+    [disabled]="state.stopped()"
+    (click)="state.togglePause()"
+    [attr.aria-label]="state.paused() ? 'Resume mission' : 'Pause mission'"
+    [attr.aria-pressed]="state.paused()"
+  >
+    <svg viewBox="0 0 20 20" fill="currentColor">
+      @if (state.paused()) {
+        <path d="m7 4 9 6-9 6z" />
+      } @else {
+        <path d="M6 5h3v10H6z M12 5h3v10h-3z" />
+      }
+    </svg>
+  </button>
+</div>

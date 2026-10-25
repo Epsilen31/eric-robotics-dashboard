@@ -1,0 +1,45 @@
+<main class="dashboard">
+  <div class="views">
+    <section class="view" [class.pip]="state.activeView() !== 'map'" aria-label="Map view">
+      <app-map-view [attr.inert]="state.activeView() !== 'map' ? '' : null" />
+      @if (state.activeView() !== 'map') {
+        <button
+          type="button"
+          class="pip-swap"
+          aria-label="Switch to map view"
+          (click)="state.activeView.set('map')"
+        >
+          <span>Click to enter map view</span>
+        </button>
+      }
+    </section>
+    <section class="view" [class.pip]="state.activeView() !== 'camera'" aria-label="Camera view">
+      <app-camera-view [attr.inert]="state.activeView() !== 'camera' ? '' : null" />
+      @if (state.activeView() !== 'camera') {
+        <button
+          type="button"
+          class="pip-swap"
+          aria-label="Switch to camera view"
+          (click)="state.activeView.set('camera')"
+        >
+          <span>Click to enter camera view</span>
+        </button>
+      }
+    </section>
+  </div>
+  <app-sidebar />
+  <app-drive-controls />
+  <div class="left-controls">
+    <app-status-pill /><app-action-button label="QUICK GOAL" (click)="state.startGoalSelection()" />
+  </div>
+  <app-status-bar class="system-status" />
+  <div class="right-controls">
+    <app-mode-toggle /><app-action-button label="INITIATE" (click)="state.initiate()" />
+  </div>
+  @if (state.notice()) {
+    <output class="notice" aria-live="polite">{{ state.notice() }}</output>
+  }
+  @if (state.connectionPanel()) {
+    <app-connection-panel />
+  }
+</main>

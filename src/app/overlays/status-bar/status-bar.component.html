@@ -1,0 +1,45 @@
+<div class="bar" aria-label="Robot system status">
+  <span
+    ><svg class="battery" viewBox="0 0 26 16" fill="none" stroke="currentColor" stroke-width="1.5">
+      <rect x="1" y="2" width="20" height="12" rx="2" />
+      <path d="M24 6v4" />
+      <rect x="4" y="5" width="14" height="6" rx="1" fill="currentColor" stroke="none" /></svg
+    >{{
+      state.ros.status() === 'demo'
+        ? '100%'
+        : state.ros.battery() === null
+          ? 'N/A'
+          : state.ros.battery() + '%'
+    }}</span
+  >
+  <span
+    ><svg viewBox="0 0 20 18" fill="currentColor">
+      <rect x="1" y="12" width="3" height="5" rx="1" />
+      <rect x="6" y="8" width="3" height="9" rx="1" />
+      <rect x="11" y="4" width="3" height="13" rx="1" />
+      <rect x="16" width="3" height="17" rx="1" /></svg
+    >{{
+      state.ros.status() === 'demo'
+        ? 'Demo'
+        : state.ros.status() === 'connected'
+          ? 'Online'
+          : 'Offline'
+    }}</span
+  >
+  <span
+    >Stop {{ state.stopped() ? 'Active' : 'Ready' }}<i [class.warning]="state.stopped()"></i
+  ></span>
+  <span
+    >System
+    {{
+      state.ros.status() === 'demo'
+        ? 'Demo'
+        : state.ros.status() === 'connected'
+          ? 'ROS'
+          : 'Offline'
+    }}<i [class.warning]="state.ros.status() === 'disconnected'"></i
+  ></span>
+</div>
+<div class="view-tab">
+  {{ state.activeView() === 'map' ? 'Map View' : 'Camera View' }}<span></span>
+</div>

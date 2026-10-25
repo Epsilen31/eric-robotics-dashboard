@@ -1,0 +1,54 @@
+<dialog #panel aria-labelledby="connection-title" (cancel)="close()" (click)="backdrop($event)">
+  <header>
+    <div>
+      <h2 id="connection-title">System &amp; ROS</h2>
+      <p>Choose offline demo or connect your robot.</p>
+    </div>
+    <button type="button" class="close" aria-label="Close connection settings" (click)="close()">
+      ?
+    </button>
+  </header>
+  <div class="connection-state" role="status">
+    {{ ros.status() === 'demo' ? 'Offline demo' : 'ROS: ' + ros.status() }}
+  </div>
+  @if (ros.error()) {
+    <p class="error" role="alert">{{ ros.error() }}</p>
+  }
+  <form (submit)="connect($event)">
+    <label
+      >ROS bridge URL<input
+        name="bridgeUrl"
+        [value]="draft.bridgeUrl"
+        (input)="updateConfigField('bridgeUrl', $event)"
+        placeholder="ws://localhost:9090"
+        required
+        autofocus
+    /></label>
+    <label
+      >Map frame<input
+        name="frameId"
+        [value]="draft.frameId"
+        (input)="updateConfigField('frameId', $event)"
+        required
+    /></label>
+    <details>
+      <summary>ROS topics</summary>
+      <div class="topics">
+        @for (topic of topics; track topic.key) {
+          <label
+            >{{ topic.label
+            }}<input
+              [name]="topic.key"
+              [value]="draft[topic.key]"
+              (input)="updateConfigField(topic.key, $event)"
+              required
+          /></label>
+        }
+      </div>
+    </details>
+    <footer>
+      <button type="button" class="secondary" (click)="demo()">Use offline demo</button
+      ><button type="submit" class="primary">Connect ROS</button>
+    </footer>
+  </form>
+</dialog>

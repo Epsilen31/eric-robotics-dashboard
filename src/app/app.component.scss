@@ -1,0 +1,177 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+  --sidebar-width: 88px;
+  --bottom-bar-height: 0px;
+}
+.dashboard {
+  position: relative;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  background: #d3d4d1;
+}
+.views {
+  position: absolute;
+  inset: 0 0 var(--bottom-bar-height) var(--sidebar-width);
+  isolation: isolate;
+}
+.view {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  z-index: 0;
+  transition:
+    width 350ms ease,
+    height 350ms ease,
+    left 350ms ease,
+    bottom 350ms ease,
+    border-radius 350ms ease;
+}
+.view.pip {
+  left: 64px;
+  bottom: 42px;
+  width: 216px;
+  height: 126px;
+  border-radius: 9px;
+  z-index: 1;
+  box-shadow: 0 2px 8px #0003;
+  border: 1px solid #9fa9ac;
+}
+.pip app-map-view,
+.pip app-camera-view {
+  pointer-events: none;
+}
+.pip-swap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: transparent;
+  color: white;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+}
+.pip-swap span {
+  padding: 5px 12px;
+  background: #122632eb;
+  border: 1px solid #a2b0b17a;
+  border-radius: 4px;
+  font-size: 9px;
+  box-shadow: 0 2px 5px #0003;
+}
+.pip-swap:hover span {
+  background: #213f50;
+}
+.pip-swap:focus-visible {
+  outline-offset: -4px;
+}
+.left-controls,
+.right-controls {
+  position: absolute;
+  z-index: 3;
+  top: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  align-items: flex-start;
+}
+.left-controls {
+  left: calc(var(--sidebar-width) + 28px);
+}
+.right-controls {
+  right: 28px;
+  align-items: flex-end;
+}
+.system-status {
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  left: calc(50% + var(--sidebar-width) / 2);
+  transform: translateX(-50%);
+}
+@media (max-width: 900px) {
+  :host {
+    --sidebar-width: 72px;
+  }
+  .left-controls {
+    left: 72px;
+  }
+  .right-controls {
+    right: 16px;
+  }
+  .system-status {
+    top: 110px;
+  }
+}
+@media (max-width: 600px) {
+  :host {
+    --sidebar-width: 0px;
+    --bottom-bar-height: calc(60px + env(safe-area-inset-bottom, 0px));
+  }
+  .left-controls {
+    left: 12px;
+    top: 14px;
+    transform: scale(0.86);
+    transform-origin: top left;
+  }
+  .right-controls {
+    right: 12px;
+    top: 70px;
+    transform: scale(0.86);
+    transform-origin: top right;
+  }
+  .system-status {
+    top: 144px;
+    transform: translateX(-50%) scale(0.88);
+    transform-origin: top center;
+  }
+  .view.pip {
+    left: 38px;
+    bottom: 24px;
+    width: 132px;
+    height: 84px;
+  }
+  .pip-swap span {
+    font-size: 8px;
+    padding: 5px 6px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .view {
+    transition: none;
+  }
+}
+
+.notice {
+  position: absolute;
+  z-index: 6;
+  top: 115px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: min(460px, calc(100% - 42px));
+  padding: 10px 14px;
+  border: 1px solid #778f99;
+  border-radius: 6px;
+  background: #142b38ed;
+  color: white;
+  font-size: 12px;
+  text-align: center;
+  pointer-events: none;
+}
+@media (max-width: 900px) {
+  .notice {
+    top: 204px;
+  }
+}
+@media (max-width: 600px) {
+  .notice {
+    top: 248px;
+    font-size: 11px;
+  }
+}

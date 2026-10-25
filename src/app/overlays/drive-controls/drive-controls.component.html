@@ -1,0 +1,87 @@
+<div class="drive">
+  <button
+    type="button"
+    class="emergency"
+    aria-label="Emergency stop"
+    [class.stopped]="state.stopped()"
+    [attr.aria-pressed]="state.stopped()"
+    (click)="state.toggleStop()"
+  >
+    <svg class="emergency-face" viewBox="0 0 100 100" aria-hidden="true">
+      <defs>
+        <path id="emergency-label-arc" d="M7.5 50a42.5 42.5 0 0 1 85 0" />
+      </defs>
+      <circle class="stop-ring" cx="50" cy="50" r="50" />
+      <circle class="stop-face" cx="50" cy="50" r="37" />
+      <circle class="symbol-outline" cx="50" cy="50" r="31" />
+      <g class="stop-arrows">
+        <path d="M33 32a25 25 0 0 1 41 22 M67 68a25 25 0 0 1-41-22" />
+      </g>
+      <g class="arrowheads">
+        <path d="m64 51 10 12 5-15z M36 49 26 37l-5 15z" />
+      </g>
+      <text class="emergency-label">
+        <textPath href="#emergency-label-arc" startOffset="50%" text-anchor="middle">
+          EMERGENCY
+        </textPath>
+      </text>
+      <text class="stop-label" x="50" y="96" text-anchor="middle">STOP</text>
+    </svg>
+  </button>
+  <div
+    class="joystick"
+    [class.disabled]="!enabled()"
+    role="group"
+    aria-label="Manual direction controls"
+  >
+    @for (direction of directions; track direction.key) {
+      <button
+        type="button"
+        [class]="'arrow ' + direction.key"
+        [class.pressed]="pressed(direction.key)"
+        [disabled]="!enabled()"
+        [attr.aria-label]="direction.label"
+        [attr.aria-pressed]="pressed(direction.key)"
+        (pointerdown)="press($event, direction.key)"
+        (pointerup)="release($event)"
+        (pointercancel)="release($event)"
+        (lostpointercapture)="release($event)"
+      >
+        <span aria-hidden="true">{{ direction.arrow }}</span
+        ><small>{{ direction.key.toUpperCase() }}</small>
+      </button>
+    }
+    <span class="hub" aria-hidden="true">KEY</span>
+  </div>
+  <span class="hint">{{
+    state.stopped() ? 'STOPPED' : enabled() ? 'MANUAL · W/A/S/D' : 'AUTO · PAD DISABLED'
+  }}</span>
+</div>
+<div class="zoom" role="group" aria-label="Map zoom">
+  <button
+    type="button"
+    aria-label="Zoom in"
+    [disabled]="state.zoom() >= settings.maxZoom"
+    (click)="state.setZoom(state.zoom() + settings.zoomButtonStep)"
+  >
+    +
+  </button>
+  <input
+    type="range"
+    [min]="settings.minZoom"
+    [max]="settings.maxZoom"
+    [step]="settings.zoomSliderStep"
+    [value]="state.zoom()"
+    aria-label="Map zoom"
+    [attr.aria-valuetext]="state.zoom().toFixed(1) + ' times'"
+    (input)="updateZoom($event)"
+  />
+  <button
+    type="button"
+    aria-label="Zoom out"
+    [disabled]="state.zoom() <= settings.minZoom"
+    (click)="state.setZoom(state.zoom() - settings.zoomButtonStep)"
+  >
+    −
+  </button>
+</div>

@@ -1,0 +1,20 @@
+<div class="pill">
+  <span>MODE</span>
+  <div class="segments" role="group" aria-label="Robot mode">
+    <button
+      type="button"
+      [class.selected]="state.mode() === 'auto'"
+      [attr.aria-pressed]="state.mode() === 'auto'"
+      (click)="state.setMode('auto')"
+    >
+      AUTO</button
+    ><button
+      type="button"
+      [class.selected]="state.mode() === 'manual'"
+      [attr.aria-pressed]="state.mode() === 'manual'"
+      (click)="state.setMode('manual')"
+    >
+      MANUAL
+    </button>
+  </div>
+</div>
