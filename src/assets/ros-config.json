@@ -1,0 +1,13 @@
+{
+  "bridgeUrl": "ws://localhost:9090",
+  "frameId": "map",
+  "pointsTopic": "/points",
+  "cameraTopic": "/camera/image/compressed",
+  "odometryTopic": "/odom",
+  "batteryTopic": "/battery_state",
+  "velocityTopic": "/cmd_vel",
+  "goalTopic": "/goal_pose",
+  "stopTopic": "/dashboard/stop",
+  "pauseTopic": "/dashboard/pause",
+  "missionTopic": "/dashboard/mission_status"
+}

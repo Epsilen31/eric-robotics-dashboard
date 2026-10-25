@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 840 580" role="img" aria-labelledby="title description">
+  <title id="title">Demo facility floor plan</title>
+  <desc id="description">A labelled example layout with a control room, charging bay, three storage racks, a central aisle and a loading area. The blue robot marker is illustrative.</desc>
+  <defs>
+    <pattern id="grid" width="28" height="28" patternUnits="userSpaceOnUse"><path d="M28 0H0V28" fill="none" stroke="#e8ece9" stroke-width="1"/></pattern>
+    <pattern id="shelves" width="30" height="30" patternUnits="userSpaceOnUse"><path d="M0 0H30" stroke="#c6b1a7" stroke-width="1"/></pattern>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="0" dy="5" stdDeviation="7" flood-color="#20333f" flood-opacity=".1"/></filter>
+  </defs>
+  <g font-family="Arial, Helvetica, sans-serif">
+    <rect x="34" y="32" width="772" height="508" rx="8" fill="#fafbf8" filter="url(#shadow)"/>
+    <rect x="34" y="32" width="772" height="508" rx="8" fill="url(#grid)"/>
+    <rect x="38" y="36" width="196" height="150" fill="#e4eceb"/>
+    <rect x="38" y="240" width="196" height="148" fill="#e6eee5"/>
+    <rect x="634" y="36" width="168" height="148" fill="#ede9df"/>
+    <rect x="634" y="370" width="168" height="166" fill="#ede9df"/>
+    <g fill="none" stroke="#263944" stroke-width="8" stroke-linecap="square" stroke-linejoin="round">
+      <path d="M34 224V32H806V224 M806 304V540H34V448 M34 384V304"/>
+      <path d="M34 190H234V146 M234 94V32 M34 236H234V286 M234 340V390H34"/>
+      <path d="M634 32V100 M634 152V188H806 M634 540V480 M634 424V366H806"/>
+    </g>
+    <g fill="none" stroke="#aab8b8" stroke-width="2">
+      <path d="M234 146h-52a52 52 0 0 1 52-52 M234 286h-54a54 54 0 0 0 54 54"/>
+      <path d="M634 100h52a52 52 0 0 1-52 52 M634 424h56a56 56 0 0 1-56 56"/>
+    </g>
+    <g fill="#253b46" text-anchor="middle" font-size="20" font-weight="600">
+      <text x="134" y="100">Control room</text>
+      <text x="134" y="300">Charging bay</text>
+      <text x="718" y="100">Loading</text><text x="718" y="128">bay A</text>
+      <text x="718" y="438">Loading</text><text x="718" y="466">bay B</text>
+    </g>
+    <g fill="#d8e0df" stroke="#8d9fa5" stroke-width="2">
+      <rect x="78" y="124" width="110" height="28" rx="3"/>
+      <rect x="83" y="326" width="100" height="38" rx="5"/>
+    </g>
+    <path d="m131 331-9 15h11l-6 14 17-20h-12l6-9z" fill="#5a826d"/>
+    <g fill="#e7d8d0" stroke="#af9384" stroke-width="2">
+      <rect x="310" y="85" width="70" height="242" rx="4"/>
+      <rect x="426" y="85" width="70" height="242" rx="4"/>
+      <rect x="542" y="85" width="46" height="242" rx="4"/>
+    </g>
+    <g fill="url(#shelves)">
+      <rect x="310" y="85" width="70" height="242"/>
+      <rect x="426" y="85" width="70" height="242"/>
+      <rect x="542" y="85" width="46" height="242"/>
+    </g>
+    <g fill="#725b50" text-anchor="middle" font-size="18" font-weight="600">
+      <text transform="translate(352 206) rotate(-90)">Storage 01</text>
+      <text transform="translate(468 206) rotate(-90)">Storage 02</text>
+      <text transform="translate(572 206) rotate(-90)">Storage 03</text>
+    </g>
+    <path d="M278 354H598" stroke="#c6d4d5" stroke-width="2" stroke-dasharray="8 8"/>
+    <text x="440" y="393" fill="#75898f" text-anchor="middle" font-size="19" letter-spacing="3">MAIN AISLE</text>
+    <path d="M278 416H598" stroke="#c6d4d5" stroke-width="2" stroke-dasharray="8 8"/>
+    <path d="M5 264h70m-13-10 13 10-13 10" fill="none" stroke="#728b92" stroke-width="3"/>
+    <text x="96" y="455" fill="#728b92" font-size="17">ENTRANCE</text>
+    <path d="M34 448h50a50 50 0 0 1-50 50" fill="none" stroke="#aab8b8" stroke-width="2"/>
+    <text x="420" y="573" fill="#71838a" font-size="15" text-anchor="middle">ILLUSTRATIVE DEMO LAYOUT - NOT A LIVE SURVEY</text>
+  </g>
+</svg>
